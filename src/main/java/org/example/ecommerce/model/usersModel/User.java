@@ -52,12 +52,12 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL )
     private List<UserPayment> payments;
 
-    @OneToOne(mappedBy = "user" , cascade = CascadeType.ALL)
-    private ShoppingSession shoppingSession;
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
+    private List <ShoppingSession> shoppingSession;
 
 
-    @OneToOne(mappedBy = "user" ,cascade = CascadeType.ALL)
-    private OrderDetails orderDetails ;
+    @OneToMany(mappedBy = "user" ,cascade = CascadeType.ALL)
+    private List<OrderDetails> orderDetails ;
 
     @OneToMany(mappedBy = "user")
     private List<SavedProduct> savedProductList ;

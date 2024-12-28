@@ -6,8 +6,7 @@ public interface IProductForm {
       String getName();
       String getPrice();
       String getDescription();
-     String getCategoryName();
-
+      String getImageUrl();
 
 
 

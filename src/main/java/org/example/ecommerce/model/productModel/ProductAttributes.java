@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "Product_Attributes")
 public class ProductAttributes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

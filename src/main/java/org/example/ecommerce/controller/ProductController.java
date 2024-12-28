@@ -13,11 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
-@RequestMapping("/product")
+@RequestMapping("api/v1/product")
 public class ProductController {
 
     private final ProductService productService;
@@ -30,12 +29,7 @@ public class ProductController {
 
 
     // add new Product ;
-    @PostMapping("/create")
-    public ResponseEntity<String> addProduct(@RequestBody ProductDto productDto) {
-        productService.createProduct(productDto);
-        return ResponseEntity.ok("Product added successfully");
 
-    }
 
     @GetMapping("/get/{product_id}")
     public ResponseEntity< Optional<Product>> getProduct(@PathVariable("product_id") long id) {
@@ -47,6 +41,7 @@ public class ProductController {
     // get all Products ;
     @GetMapping("/get")
     public ResponseEntity<List<Product>> getProducts() {
+
         return ResponseEntity.ok().body(productService.getProducts());
 
     }
@@ -59,14 +54,19 @@ public class ProductController {
 
 
     @PutMapping("/put/updateProduct")
-    public ResponseEntity<Product> updateProduct( @RequestBody Product product) throws Exception {
+    public ResponseEntity<Product> updateProduct( @RequestBody Product product ) throws Exception {
          return  ResponseEntity.ok().body(productService.updateProduct(product)) ;
 
     }
 
     @GetMapping("view/products")
     public  ResponseEntity<List<IProductForm>> viewProducts() {
-        return ResponseEntity.ok().body(productService.viewProducts());
+
+        List<IProductForm> products = productService.viewProducts();
+
+
+
+        return ResponseEntity.ok().body(products);
     }
 
     @GetMapping("get/categories")

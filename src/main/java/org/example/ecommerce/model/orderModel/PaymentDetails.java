@@ -1,6 +1,7 @@
 package org.example.ecommerce.model.orderModel;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,20 +10,22 @@ import lombok.Setter;
 import org.aspectj.weaver.ast.Or;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "PaymentDetails")
 public class PaymentDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
-    @OneToOne(mappedBy = "paymentDetails")
-    private OrderDetails orderDetails;
+    @OneToMany(mappedBy = "paymentDetails")
+    @JsonIgnore
+    private List<OrderDetails> orderDetails;
 
 //    @OneToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "order_id")

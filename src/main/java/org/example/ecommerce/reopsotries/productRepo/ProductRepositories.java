@@ -14,7 +14,7 @@ public interface ProductRepositories extends JpaRepository<Product , Long>  {
 
 
 
-    @Query("SELECT p.productId ,  p.name AS name, p.price AS price, p.description AS description FROM Product p")
+    @Query("SELECT p.productId as productId ,  p.name AS name, p.price AS price, p.description  AS description ,p.imageUrl As imageUrl  FROM Product p")
     List<IProductForm> findAllIProductFrom();
 
 
@@ -24,7 +24,7 @@ public interface ProductRepositories extends JpaRepository<Product , Long>  {
 
 
     @Query("SELECT p.productId AS productId, p.name AS name, p.price AS price, p.description AS description " +
-            "FROM Product p INNER JOIN FavouriteProduct f ON p.productId = f.product.productId " +
+            "FROM Product p INNER JOIN Favourite_Product f ON p.productId = f.product.productId " +
             "WHERE f.user.userId = :id")
     Optional<List<IProductForm>> findAllFavProductById(Long id);
 

@@ -11,11 +11,11 @@ import org.example.ecommerce.model.usersModel.User;
 
 import java.sql.Timestamp;
 
-@Entity
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity(name = "Save_Product")
 public class SavedProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

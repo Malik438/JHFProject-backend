@@ -28,7 +28,7 @@ public class CartItemService {
 
     private final CartItemRepositories cartItemRepositories;
 
-    private final SessionService sessionService;
+    private final SessionService sessionService ;
     private final UserService userService;
     private final ProductService productService;
     private final ProductRepositories productRepositories;
@@ -49,7 +49,7 @@ public class CartItemService {
 
 
 
-
+    @Transactional // to achieve acid
     public ShoppingSession addProductToCart(Long userId, Long productId) {
 
         Optional<Product> product = productService.findProductById(productId);
@@ -59,7 +59,7 @@ public class CartItemService {
         if (product.isPresent()) {
 
 
-            Optional<ShoppingSession> shoppingSession = sessionService.getShoppingSessionByUserId(userId);
+            Optional<ShoppingSession> shoppingSession = sessionService.getActiveShoppingSessionByUserId(userId);
 
 
             if (shoppingSession.isPresent()) {
@@ -67,6 +67,7 @@ public class CartItemService {
                 session.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
             } else {
+
                 session = sessionService.createShoppingSession(userId);
 
             }
@@ -111,6 +112,7 @@ public class CartItemService {
     }
 
 
+    @Transactional
     public void deleteFromCartItem(long sessionId, Long productId) {
         CartItem cartItem = existInCartItem(sessionId, productId);
         if (cartItem != null) {
@@ -152,7 +154,7 @@ public class CartItemService {
 
         CartItem cartItem = new CartItem();
         Optional<SavedProduct> savedProduct = savedProductRepository.findById(SavedItemId);
-        Optional<ShoppingSession> shoppingSession = sessionService.getShoppingSessionByUserId(userId);
+        Optional<ShoppingSession> shoppingSession = sessionService.getActiveShoppingSessionByUserId(userId);
 
 
         if (savedProduct.isPresent() && shoppingSession.isPresent()) {

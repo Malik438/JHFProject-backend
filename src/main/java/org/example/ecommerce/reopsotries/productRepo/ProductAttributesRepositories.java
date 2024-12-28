@@ -11,6 +11,6 @@ public interface ProductAttributesRepositories extends JpaRepository<ProductAttr
 
     @Modifying
     @Transactional
-    @Query("delete  from  ProductAttributes p where  p.product.productId = :productId")
+    @Query("delete  from  Product_Attributes p where  p.product.productId = :productId")
       void deleteProductAttributesByProductId(Long  productId);
 }

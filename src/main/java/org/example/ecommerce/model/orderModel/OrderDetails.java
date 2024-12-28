@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.ecommerce.model.orderModel.enums.OrderStatus;
 import org.example.ecommerce.model.usersModel.User;
 
 import java.sql.Timestamp;
@@ -15,21 +16,21 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "Order_Details")
 public class OrderDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
 
     private  double totalPrice;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "payment_id" )
     private  PaymentDetails paymentDetails;
 
@@ -39,19 +40,13 @@ public class OrderDetails {
 //    @OneToOne(cascade = CascadeType.ALL ,  mappedBy = "orderDetails_1")
 //    private PaymentDetails PaymentDetails;
 
-
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
     private Timestamp createdAt ;
     private  Timestamp updatedAt ;
 
 
-    // USER INV
 
-    // if user end session and fav list  still have data
-
-    
-
-
-     // order history
 
 
 

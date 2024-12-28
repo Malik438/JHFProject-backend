@@ -25,6 +25,6 @@ public interface FavouriteProductRepository extends JpaRepository<FavouriteProdu
 
 
 
-    @Query("select p.product.productId from FavouriteProduct  p where  p.user.userId = :userId")
+    @Query("select p.product.productId from Favourite_Product  p where  p.user.userId = :userId")
     List<Long> findAllProductIdsByUser_Id(Long userId);
 }

@@ -1,15 +1,20 @@
 package org.example.ecommerce.controller;
 
 
+import org.example.ecommerce.model.orderModel.CartItem;
 import org.example.ecommerce.model.orderModel.ShoppingSession;
+import org.example.ecommerce.model.orderModel.enums.SessionStatus;
 import org.example.ecommerce.service.orderService.SessionService;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("session")
+@RequestMapping("api/v1/session")
 public class ShoppingSessionController {
 
     private  final SessionService sessionService;
@@ -27,17 +32,27 @@ public class ShoppingSessionController {
 
     }
 
+    @PatchMapping ("/update/{shoppingSessionId}")
+    public ResponseEntity<ShoppingSession> updateShoppingSession(@PathVariable("shoppingSessionId") long shoppingSessionId , @RequestBody SessionStatus sessionStatus) {
 
-    @DeleteMapping("/delete/{shoppingSessionId}/{userId}")
-    public ResponseEntity<String> deleteShoppingSession(@PathVariable("shoppingSessionId") long shoppingSessionId , @PathVariable("userId") long userId) {
-
-       return ResponseEntity.ok().body(sessionService.deleteShoppingSession(shoppingSessionId,userId));
+       return ResponseEntity.ok().body(sessionService.updateShoppingSessionStatus(shoppingSessionId, sessionStatus));
     }
 
 
     @GetMapping("get/currentSession/cartItems/{user_id}")
     public  ResponseEntity<Optional<ShoppingSession>> getCurrentCartItem(@PathVariable("user_id") Long userId) {
-             return  ResponseEntity.ok().body(sessionService.getShoppingSessionByUserId(userId)) ;
+             return  ResponseEntity.ok().body(sessionService.getActiveShoppingSessionByUserId(userId)) ;
+     }
+
+//     @PatchMapping("save/session/cartItem/later/{session_id}")
+//    public ResponseEntity<String> saveCartItemForLater(@PathVariable(name ="session_id") long sessionId ) {
+//         sessionService.saveCartItemForLater(sessionId);
+//        return  ResponseEntity.ok("Cart item saved for later successfully.");
+//     }
+
+     @GetMapping("saved/cartItems/{user_id}")
+    public  ResponseEntity<List<List<CartItem>>> getSavedCartItem(@PathVariable("user_id") Long userId) {
+        return   ResponseEntity.ok().body(sessionService.getCartItemsByUserId(userId)) ;
      }
 
 

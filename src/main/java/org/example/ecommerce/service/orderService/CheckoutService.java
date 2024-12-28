@@ -1,6 +1,8 @@
-package org.example.ecommerce.service;
+package org.example.ecommerce.service.orderService;
 
 import org.example.ecommerce.model.orderModel.*;
+import org.example.ecommerce.model.orderModel.enums.OrderStatus;
+import org.example.ecommerce.model.orderModel.enums.SessionStatus;
 import org.example.ecommerce.model.usersModel.User;
 import org.example.ecommerce.model.usersModel.UserPayment;
 import org.example.ecommerce.reopsotries.orderRepo.*;
@@ -14,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CheckoutService {
@@ -28,9 +28,10 @@ public class CheckoutService {
     private  final ProductRepositories productRepositories;
     private final UserRepositories userRepositories;
     private final UserPaymentRepositories userPaymentRepositories;
+    private  final SessionService sessionService;
 
     @Autowired
-    public CheckoutService(ShoppingSessionRepositories shoppingSessionRepositories, CartItemRepositories cartItemRepositories, OrderDetailsRepositories orderDetailsRepositories, OrderItemRepositories orderItemRepositories, PaymentDetailsRepositories paymentDetailsRepositories, ProductRepositories productRepositories, UserRepositories userRepositories, UserPaymentRepositories userPaymentRepositories) {
+    public CheckoutService(ShoppingSessionRepositories shoppingSessionRepositories, CartItemRepositories cartItemRepositories, OrderDetailsRepositories orderDetailsRepositories, OrderItemRepositories orderItemRepositories, PaymentDetailsRepositories paymentDetailsRepositories, ProductRepositories productRepositories, UserRepositories userRepositories, UserPaymentRepositories userPaymentRepositories, SessionService sessionService) {
         this.shoppingSessionRepositories = shoppingSessionRepositories;
         this.cartItemRepositories = cartItemRepositories;
         this.orderDetailsRepositories = orderDetailsRepositories;
@@ -39,16 +40,19 @@ public class CheckoutService {
         this.productRepositories = productRepositories;
         this.userRepositories = userRepositories;
         this.userPaymentRepositories = userPaymentRepositories;
+        this.sessionService = sessionService;
     }
 
-
+          // read the value of transactional 
         @Transactional
         public OrderDetails processCheckout(Long userId ,Long sessionId , Long userPaymentId) throws Exception {
 
 
+
+
+
             ShoppingSession session = shoppingSessionRepositories.findById(sessionId)
                     .orElseThrow(() -> new Exception("Session not found"));
-            User user = userRepositories.findById(userId).orElseThrow(() -> new Exception("User not found"));
 
            UserPayment userPayment = userPaymentRepositories.findById(userPaymentId).orElseThrow(() -> new Exception("Payment details not found"));
 
@@ -59,38 +63,46 @@ public class CheckoutService {
 
 
             OrderDetails order = new OrderDetails();
+
+
+
             order.setUser(session.getUser());
             order.setTotalPrice(session.getTotalPrice());
-            order.setUser(user);
             order.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-            order.setPaymentDetails(paymentDetails);
             order.setOrderItems(new ArrayList<>());
+            order.setOrderStatus(OrderStatus.PENDING);
 
             paymentDetails.setAmount(order.getTotalPrice());
             paymentDetails.setProvider(userPayment.getPaymentType());
             paymentDetails.setStatus(true);
 
 
+            System.out.println("the id is " + order.getId());
+
+            OrderItem orderItem ;
             for (CartItem cartItem : session.getCartItems()) {
-                OrderItem orderItem = new OrderItem();
+                 orderItem = new OrderItem();
                 orderItem.setOrderDetails(order);
                 orderItem.setProduct(cartItem.getProduct());
                 orderItem.setQuantity(cartItem.getQuantity());
+                orderItem.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
                 System.out.println("saving OrderItem: " + orderItem.getProduct().getName());
                 order.getOrderItems().add(orderItem);
                 orderItemRepositories.save(orderItem);
+                cartItem.getProduct().setQuantity(cartItem.getQuantity()-1);
 
             }
             session.getCartItems().clear();
-            order = orderDetailsRepositories.save(order);
+            orderDetailsRepositories.save(order);
 
 
 
             if(paymentDetails.getAmount() < userPayment.getAmount()) {
                 paymentDetails.setStatus(true);
                 userPayment.setAmount(userPayment.getAmount() - paymentDetails.getAmount());
-                cartItemRepositories.deleteCartItemBySessionId(sessionId);
-                shoppingSessionRepositories.deleteById(sessionId);
+                //delete(sessionId);
+
+
 
             }else {
 
@@ -99,11 +111,22 @@ public class CheckoutService {
             }
 
             paymentDetailsRepositories.save(paymentDetails);
+            order.setPaymentDetails(paymentDetails);
+            session.setSessionStatus(SessionStatus.COMPLETED);
+
+            sessionService.createShoppingSession(userId);
 
 
             return order;
         }
 
-        
+
+      @Transactional
+      public  void delete(long sessionId){
+          shoppingSessionRepositories.deleteById(sessionId);
+
+      }
+
+
 
 }

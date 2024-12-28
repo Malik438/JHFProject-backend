@@ -1,6 +1,7 @@
 package org.example.ecommerce.model.productModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "Product")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,9 +28,11 @@ public class Product {
     private  String description;
     private  int price;
     private int quantity;
-    //    @ManyToOne(fetch = FetchType.LAZY)
-    //    @JoinColumn(name = "supplier_id")
-    //    private Supplier supplier;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    @JsonIgnore
+    private Supplier supplier;
 
 
 
@@ -44,9 +47,10 @@ public class Product {
     @JoinColumn(name = "Category_id")
     private ProductCategory productCat;
 
-    @OneToOne(mappedBy = "product")
+    // one to many
+    @OneToMany(mappedBy = "product")
     @JsonIgnore
-    private CartItem cartItem ;
+    private List<CartItem> cartItem ;
 
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
@@ -55,10 +59,19 @@ public class Product {
 
 
 
-    @OneToOne(cascade =  CascadeType.ALL, mappedBy = "product")
-    private OrderItem orderItem;
+    @OneToMany(cascade =  CascadeType.ALL, mappedBy = "product")
+    @JsonIgnore
+    private List<OrderItem> orderItem;
+
+    @JsonProperty("supplierId") // Includes this field in the JSON response
+    public Long getSupplierId() {
+        return supplier != null ? supplier.getSupplierId() : null;
+    }
 
 
+
+    @Lob
+    private  String imageUrl;
 
      private  Timestamp createdAt ;
      private  Timestamp updatedAt ;

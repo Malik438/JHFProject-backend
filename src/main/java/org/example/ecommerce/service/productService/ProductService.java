@@ -14,9 +14,12 @@ import org.example.ecommerce.reopsotries.userRepo.UserRepositories;
 import org.example.ecommerce.service.orderService.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,9 +34,10 @@ public class ProductService {
     private  final CartItemRepositories cartItemRepositories;
     private  final SavedProductRepository savedProductRepository;
     private  final SessionService sessionService;
+    private  final SupplierRepositories supplierRepositories;
 
     @Autowired
-    public ProductService(ProductRepositories productRepositories, ProductCategoryRepositories productCategoryRepositories, ProductAttributesRepositories productAttributesRepositories, UserRepositories userRepositories, FavouriteProductRepository favouriteProductRepository, CartItemRepositories cartItemRepositories, SavedProductRepository savedProductRepository, SessionService sessionService) {
+    public ProductService(ProductRepositories productRepositories, ProductCategoryRepositories productCategoryRepositories, ProductAttributesRepositories productAttributesRepositories, UserRepositories userRepositories, FavouriteProductRepository favouriteProductRepository, CartItemRepositories cartItemRepositories, SavedProductRepository savedProductRepository, SessionService sessionService, SupplierRepositories supplierRepositories) {
         this.productRepositories = productRepositories;
         this.productCategoryRepositories = productCategoryRepositories;
         this.productAttributesRepositories = productAttributesRepositories;
@@ -42,6 +46,7 @@ public class ProductService {
         this.cartItemRepositories = cartItemRepositories;
         this.savedProductRepository = savedProductRepository;
         this.sessionService = sessionService;
+        this.supplierRepositories = supplierRepositories;
     }
 
 
@@ -61,21 +66,44 @@ public class ProductService {
 
     }
 
-    public void  createProduct(ProductDto productDto  ){
+
+
+    public void  createProduct(ProductDto productDto , MultipartFile file, Long  supplierId  ) throws IOException {
+
+
+
         Product product =  productDto.getProduct() ;
+        product.setImageUrl(Base64.getEncoder().encodeToString(file.getBytes()));
+
         ProductCategory productCategory = productDto.getProductCategory() ;
         List<ProductAttributes> productAttributes = productDto.getAttributes();
+        Optional<Supplier> supplier = supplierRepositories.findById(supplierId);
 
+
+
+        if(supplier.isPresent()){
+            product.setSupplier(supplier.get());
+            supplier.get().getProducts().add(product);
+
+        }else {
+            throw new RuntimeException("Supplier not found");
+        }
 
 
         product.setProductCat(productCategory);
         productCategoryRepositories.save(productCategory);
 
         product =   productRepositories.save(product);
+
+
         for (ProductAttributes Attributes : productAttributes) {
             Attributes.setProduct(product);
             productAttributesRepositories.save(Attributes);
         }
+
+
+
+
         //product.setList(productAttributes);
 
 
@@ -103,6 +131,8 @@ public class ProductService {
 
 
     public  List<IProductForm> viewProducts(){
+
+
         return  productRepositories.findAllIProductFrom() ;
     }
 

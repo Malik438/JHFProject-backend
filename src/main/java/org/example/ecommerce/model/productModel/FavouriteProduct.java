@@ -12,7 +12,7 @@ import org.example.ecommerce.model.usersModel.User;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "Favourite_Product")
 public class FavouriteProduct {
 
     @Id

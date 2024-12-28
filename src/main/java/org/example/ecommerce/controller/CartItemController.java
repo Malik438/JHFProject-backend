@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("cartItem")
+@RequestMapping("api/v1/cartItem")
 public class CartItemController {
 
     private final CartItemService cartItemService;
@@ -47,4 +47,7 @@ public class CartItemController {
         cartItemService.deleteFromCartItem(sessionId, productId);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
+
+
+
 }

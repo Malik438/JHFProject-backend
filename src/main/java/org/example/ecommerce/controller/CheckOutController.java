@@ -2,16 +2,15 @@ package org.example.ecommerce.controller;
 
 
 import org.example.ecommerce.model.orderModel.OrderDetails;
-import org.example.ecommerce.service.CheckoutService;
+import org.example.ecommerce.service.orderService.CheckoutService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("checkout")
+@RequestMapping("api/v1/checkout")
 public class CheckOutController {
 
     private  final CheckoutService checkoutService;

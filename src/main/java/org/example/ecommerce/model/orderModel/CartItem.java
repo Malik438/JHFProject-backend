@@ -11,10 +11,17 @@ import java.sql.Timestamp;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Table(
+        name = "cart_item",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"session_id", "product_id"})
+        }
+)
+@Entity(name = "cart_item")
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
     private int quantity;
@@ -23,7 +30,8 @@ public class CartItem {
     @JsonIgnore
     private ShoppingSession session;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    // many to one
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;
 
