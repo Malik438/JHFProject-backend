@@ -1,14 +1,13 @@
 package org.example.ecommerce.service.orderService;
 
 import org.example.ecommerce.model.orderModel.*;
-import org.example.ecommerce.model.orderModel.enums.OrderStatus;
-import org.example.ecommerce.model.orderModel.enums.SessionStatus;
-import org.example.ecommerce.model.usersModel.User;
+import org.example.ecommerce.enums.OrderStatus;
+import org.example.ecommerce.enums.SessionStatus;
 import org.example.ecommerce.model.usersModel.UserPayment;
 import org.example.ecommerce.reopsotries.orderRepo.*;
-import org.example.ecommerce.reopsotries.productRepo.ProductRepositories;
-import org.example.ecommerce.reopsotries.userRepo.UserPaymentRepositories;
-import org.example.ecommerce.reopsotries.userRepo.UserRepositories;
+import org.example.ecommerce.reopsotries.productRepo.ProductRepository;
+import org.example.ecommerce.reopsotries.userRepo.UserPaymentRepository;
+import org.example.ecommerce.reopsotries.userRepo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,26 +19,26 @@ import java.util.ArrayList;
 @Service
 public class CheckoutService {
 
-    private  final ShoppingSessionRepositories shoppingSessionRepositories;
-    private final CartItemRepositories cartItemRepositories;
-    private  final OrderDetailsRepositories orderDetailsRepositories;
-    private  final OrderItemRepositories orderItemRepositories;
-    private  final PaymentDetailsRepositories paymentDetailsRepositories;
-    private  final ProductRepositories productRepositories;
-    private final UserRepositories userRepositories;
-    private final UserPaymentRepositories userPaymentRepositories;
+    private  final ShoppingSessionRepository shoppingSessionRepository;
+    private final CartItemRepository cartItemRepositories;
+    private  final OrderDetailsRepository orderDetailsRepository;
+    private  final OrderItemRepository orderItemRepository;
+    private  final PaymentDetailsRepository paymentDetailsRepository;
+    private  final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final UserPaymentRepository userPaymentRepository;
     private  final SessionService sessionService;
 
     @Autowired
-    public CheckoutService(ShoppingSessionRepositories shoppingSessionRepositories, CartItemRepositories cartItemRepositories, OrderDetailsRepositories orderDetailsRepositories, OrderItemRepositories orderItemRepositories, PaymentDetailsRepositories paymentDetailsRepositories, ProductRepositories productRepositories, UserRepositories userRepositories, UserPaymentRepositories userPaymentRepositories, SessionService sessionService) {
-        this.shoppingSessionRepositories = shoppingSessionRepositories;
+    public CheckoutService(ShoppingSessionRepository shoppingSessionRepository, CartItemRepository cartItemRepositories, OrderDetailsRepository orderDetailsRepository, OrderItemRepository orderItemRepository, PaymentDetailsRepository paymentDetailsRepository, ProductRepository productRepository, UserRepository userRepository, UserPaymentRepository userPaymentRepository, SessionService sessionService) {
+        this.shoppingSessionRepository = shoppingSessionRepository;
         this.cartItemRepositories = cartItemRepositories;
-        this.orderDetailsRepositories = orderDetailsRepositories;
-        this.orderItemRepositories = orderItemRepositories;
-        this.paymentDetailsRepositories = paymentDetailsRepositories;
-        this.productRepositories = productRepositories;
-        this.userRepositories = userRepositories;
-        this.userPaymentRepositories = userPaymentRepositories;
+        this.orderDetailsRepository = orderDetailsRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.paymentDetailsRepository = paymentDetailsRepository;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.userPaymentRepository = userPaymentRepository;
         this.sessionService = sessionService;
     }
 
@@ -51,10 +50,10 @@ public class CheckoutService {
 
 
 
-            ShoppingSession session = shoppingSessionRepositories.findById(sessionId)
+            ShoppingSession session = shoppingSessionRepository.findById(sessionId)
                     .orElseThrow(() -> new Exception("Session not found"));
 
-           UserPayment userPayment = userPaymentRepositories.findById(userPaymentId).orElseThrow(() -> new Exception("Payment details not found"));
+           UserPayment userPayment = userPaymentRepository.findById(userPaymentId).orElseThrow(() -> new Exception("Payment details not found"));
 
             PaymentDetails paymentDetails = new PaymentDetails();
             paymentDetails.setStatus(false);
@@ -88,12 +87,12 @@ public class CheckoutService {
                 orderItem.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
                 System.out.println("saving OrderItem: " + orderItem.getProduct().getName());
                 order.getOrderItems().add(orderItem);
-                orderItemRepositories.save(orderItem);
+                orderItemRepository.save(orderItem);
                 cartItem.getProduct().setQuantity(cartItem.getQuantity()-1);
 
             }
             session.getCartItems().clear();
-            orderDetailsRepositories.save(order);
+            orderDetailsRepository.save(order);
 
 
 
@@ -110,7 +109,7 @@ public class CheckoutService {
 
             }
 
-            paymentDetailsRepositories.save(paymentDetails);
+            paymentDetailsRepository.save(paymentDetails);
             order.setPaymentDetails(paymentDetails);
             session.setSessionStatus(SessionStatus.COMPLETED);
 
@@ -123,7 +122,7 @@ public class CheckoutService {
 
       @Transactional
       public  void delete(long sessionId){
-          shoppingSessionRepositories.deleteById(sessionId);
+          shoppingSessionRepository.deleteById(sessionId);
 
       }
 

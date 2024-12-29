@@ -7,44 +7,42 @@ import org.example.ecommerce.model.orderModel.ShoppingSession;
 import org.example.ecommerce.model.productModel.Product;
 import org.example.ecommerce.model.productModel.SavedProduct;
 import org.example.ecommerce.model.usersModel.User;
-import org.example.ecommerce.reopsotries.orderRepo.CartItemRepositories;
-import org.example.ecommerce.reopsotries.orderRepo.ShoppingSessionRepositories;
-import org.example.ecommerce.reopsotries.productRepo.ProductRepositories;
+import org.example.ecommerce.reopsotries.orderRepo.CartItemRepository;
+import org.example.ecommerce.reopsotries.orderRepo.ShoppingSessionRepository;
+import org.example.ecommerce.reopsotries.productRepo.ProductRepository;
 import org.example.ecommerce.reopsotries.productRepo.SavedProductRepository;
-import org.example.ecommerce.reopsotries.userRepo.UserRepositories;
+import org.example.ecommerce.reopsotries.userRepo.UserRepository;
 import org.example.ecommerce.service.userService.UserService;
 import org.example.ecommerce.service.productService.ProductService;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CartItemService {
 
-    private final CartItemRepositories cartItemRepositories;
+    private final CartItemRepository cartItemRepositories;
 
     private final SessionService sessionService ;
     private final UserService userService;
     private final ProductService productService;
-    private final ProductRepositories productRepositories;
+    private final ProductRepository productRepository;
     private final SavedProductRepository savedProductRepository;
-    private final UserRepositories userRepositories;
+    private final UserRepository userRepository;
 
 
     @Autowired
-    public CartItemService(CartItemRepositories cartItemRepositories, ShoppingSessionRepositories shoppingSessionRepositories, SessionService sessionService, UserService userService, ProductService productService, ProductRepositories productRepositories, SavedProductRepository savedProductRepository, UserRepositories userRepositories) {
+    public CartItemService(CartItemRepository cartItemRepositories, ShoppingSessionRepository shoppingSessionRepository, SessionService sessionService, UserService userService, ProductService productService, ProductRepository productRepository, SavedProductRepository savedProductRepository, UserRepository userRepository) {
         this.cartItemRepositories = cartItemRepositories;
         this.sessionService = sessionService;
         this.userService = userService;
         this.productService = productService;
-        this.productRepositories = productRepositories;
+        this.productRepository = productRepository;
         this.savedProductRepository = savedProductRepository;
-        this.userRepositories = userRepositories;
+        this.userRepository = userRepository;
     }
 
 
@@ -132,7 +130,7 @@ public class CartItemService {
 
         CartItem cartItem = cartItemRepositories.findById(id).orElseThrow(() -> new IllegalArgumentException("cart item not found"));
 
-        User user = userRepositories.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
 
 
         savedProduct.setUser(user);

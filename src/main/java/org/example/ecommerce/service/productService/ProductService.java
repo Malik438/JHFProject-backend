@@ -1,18 +1,19 @@
 package org.example.ecommerce.service.productService;
 
-import jakarta.transaction.Transactional;
-import org.example.ecommerce.model.Dto.FavProductDto;
-import org.example.ecommerce.model.orderModel.CartItem;
-import org.example.ecommerce.model.orderModel.ShoppingSession;
+import org.example.ecommerce.Dto.FavProductDto;
+import org.example.ecommerce.Dto.ProductDto;
 import org.example.ecommerce.model.productModel.*;
 import org.example.ecommerce.model.productModel.FavouriteProduct;
 import org.example.ecommerce.model.usersModel.User;
-import org.example.ecommerce.reopsotries.orderRepo.CartItemRepositories;
+import org.example.ecommerce.reopsotries.orderRepo.CartItemRepository;
 import org.example.ecommerce.reopsotries.productRepo.*;
-import org.example.ecommerce.reopsotries.productRepo.projections.IProductForm;
-import org.example.ecommerce.reopsotries.userRepo.UserRepositories;
+import org.example.ecommerce.reopsotries.projections.IProductForm;
+import org.example.ecommerce.reopsotries.userRepo.UserRepository;
 import org.example.ecommerce.service.orderService.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,27 +27,27 @@ import java.util.Optional;
 @Service
 public class ProductService {
 
-    private final ProductRepositories productRepositories;
-    private  final ProductCategoryRepositories productCategoryRepositories;
-    private  final ProductAttributesRepositories productAttributesRepositories;
-    private final UserRepositories userRepositories;
+    private final ProductRepository productRepository;
+    private  final ProductCategoryRepository productCategoryRepository;
+    private  final ProductAttributesRepository productAttributesRepository;
+    private final UserRepository userRepository;
     private  final FavouriteProductRepository favouriteProductRepository;
-    private  final CartItemRepositories cartItemRepositories;
+    private  final CartItemRepository cartItemRepositories;
     private  final SavedProductRepository savedProductRepository;
     private  final SessionService sessionService;
-    private  final SupplierRepositories supplierRepositories;
+    private  final SupplierRepository supplierRepository;
 
     @Autowired
-    public ProductService(ProductRepositories productRepositories, ProductCategoryRepositories productCategoryRepositories, ProductAttributesRepositories productAttributesRepositories, UserRepositories userRepositories, FavouriteProductRepository favouriteProductRepository, CartItemRepositories cartItemRepositories, SavedProductRepository savedProductRepository, SessionService sessionService, SupplierRepositories supplierRepositories) {
-        this.productRepositories = productRepositories;
-        this.productCategoryRepositories = productCategoryRepositories;
-        this.productAttributesRepositories = productAttributesRepositories;
-        this.userRepositories = userRepositories;
+    public ProductService(ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ProductAttributesRepository productAttributesRepository, UserRepository userRepository, FavouriteProductRepository favouriteProductRepository, CartItemRepository cartItemRepositories, SavedProductRepository savedProductRepository, SessionService sessionService, SupplierRepository supplierRepository) {
+        this.productRepository = productRepository;
+        this.productCategoryRepository = productCategoryRepository;
+        this.productAttributesRepository = productAttributesRepository;
+        this.userRepository = userRepository;
         this.favouriteProductRepository = favouriteProductRepository;
         this.cartItemRepositories = cartItemRepositories;
         this.savedProductRepository = savedProductRepository;
         this.sessionService = sessionService;
-        this.supplierRepositories = supplierRepositories;
+        this.supplierRepository = supplierRepository;
     }
 
 
@@ -54,15 +55,16 @@ public class ProductService {
 
 
     public Optional<Product> findProductById(Long id) {
-       Optional<Product> product =   productRepositories.findById(id) ;
+       Optional<Product> product =   productRepository.findById(id) ;
 
         product.ifPresent(value -> System.out.println(value.getList()));
         return  product;
     }
 
-    public List<Product> getProducts(){
+    public Page<Product> getProducts(int page,int size){
 
-        return  productRepositories.findAll() ;
+        Pageable pageable = PageRequest.of(page,size);
+        return  productRepository.findAll(pageable) ;
 
     }
 
@@ -77,7 +79,7 @@ public class ProductService {
 
         ProductCategory productCategory = productDto.getProductCategory() ;
         List<ProductAttributes> productAttributes = productDto.getAttributes();
-        Optional<Supplier> supplier = supplierRepositories.findById(supplierId);
+        Optional<Supplier> supplier = supplierRepository.findById(supplierId);
 
 
 
@@ -91,14 +93,14 @@ public class ProductService {
 
 
         product.setProductCat(productCategory);
-        productCategoryRepositories.save(productCategory);
+        productCategoryRepository.save(productCategory);
 
-        product =   productRepositories.save(product);
+        product =   productRepository.save(product);
 
 
         for (ProductAttributes Attributes : productAttributes) {
             Attributes.setProduct(product);
-            productAttributesRepositories.save(Attributes);
+            productAttributesRepository.save(Attributes);
         }
 
 
@@ -109,8 +111,8 @@ public class ProductService {
 
     }
     public void  deleteProductById(Long id){
-           productAttributesRepositories.deleteProductAttributesByProductId(id);
-           productRepositories.deleteById(id);
+           productAttributesRepository.deleteProductAttributesByProductId(id);
+           productRepository.deleteById(id);
 
     }
 
@@ -121,7 +123,7 @@ public class ProductService {
 
         updatedProduct.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
-     return  productRepositories.save(updatedProduct);
+     return  productRepository.save(updatedProduct);
 
 
     }
@@ -130,21 +132,22 @@ public class ProductService {
 // crud end here
 
 
-    public  List<IProductForm> viewProducts(){
+    public  Page<IProductForm> viewProducts(int page ,int size ){
 
+        Pageable pageable = PageRequest.of(page, size) ;
 
-        return  productRepositories.findAllIProductFrom() ;
+        return  productRepository.findAllIProductFrom(pageable) ;
     }
 
 
     public  List<ProductCategory> getProductCategories(){
-        return   productCategoryRepositories.findAll();
+        return   productCategoryRepository.findAll();
     }
 
 
     public  List<IProductForm> getProductFormsByCategory(String productCategoryName){
 
-        return productRepositories.findAllIProductFromByCategory(productCategoryName);
+        return productRepository.findAllIProductFromByCategory(productCategoryName);
 
     }
 
@@ -152,8 +155,8 @@ public class ProductService {
         public  Optional<FavProductDto> addFavProduct(Long userId , Long productId){
 
 
-         User user =  userRepositories.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
-         Product product = productRepositories.findById(productId).orElseThrow(() -> new IllegalArgumentException("product not found"));
+         User user =  userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
+         Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("product not found"));
 
 
             boolean isFav = favouriteProductRepository.existsByUserAndProduct(user,product);
@@ -168,7 +171,7 @@ public class ProductService {
 
 
             user.getFavouriteProducts().add(favouriteProduct);
-            userRepositories.save(user);
+            userRepository.save(user);
 
             FavProductDto FavProductDto = new FavProductDto();
             FavProductDto.setId(favouriteProduct.getId());
@@ -183,7 +186,7 @@ public class ProductService {
 
         public  Optional<List<IProductForm>> getFavouriteProducts(Long userId){
 
-             return  productRepositories.findAllFavProductById(userId);
+             return  productRepository.findAllFavProductById(userId);
 
 
 
@@ -194,8 +197,8 @@ public class ProductService {
 
 
             int  rowAffected = 0 ;
-            User user =  userRepositories.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
-            Product product = productRepositories.findById(productId).orElseThrow(() -> new IllegalArgumentException("product not found"));
+            User user =  userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("user not found"));
+            Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("product not found"));
 
 
             boolean isFav = favouriteProductRepository.existsByUserAndProduct(user,product);

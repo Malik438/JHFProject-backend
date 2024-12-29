@@ -3,14 +3,14 @@ package org.example.ecommerce.service.supplier;
 import lombok.RequiredArgsConstructor;
 //import org.example.ecommerce.model.Dto.OrderDto;
 import org.example.ecommerce.model.orderModel.OrderDetails;
-import org.example.ecommerce.model.orderModel.enums.OrderStatus;
+import org.example.ecommerce.enums.OrderStatus;
 import org.example.ecommerce.model.productModel.Product;
 import org.example.ecommerce.model.productModel.Supplier;
-import org.example.ecommerce.model.projections.IOrderProjection;
-import org.example.ecommerce.reopsotries.orderRepo.OrderDetailsRepositories;
-import org.example.ecommerce.reopsotries.productRepo.ProductRepositories;
-import org.example.ecommerce.reopsotries.productRepo.SupplierRepositories;
-import org.example.ecommerce.reopsotries.userRepo.UserRepositories;
+import org.example.ecommerce.reopsotries.projections.IOrderProjection;
+import org.example.ecommerce.reopsotries.orderRepo.OrderDetailsRepository;
+import org.example.ecommerce.reopsotries.productRepo.ProductRepository;
+import org.example.ecommerce.reopsotries.productRepo.SupplierRepository;
+import org.example.ecommerce.reopsotries.userRepo.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -23,10 +23,10 @@ import java.util.Optional;
 public class SupplierService {
 
 
-    private  final SupplierRepositories supplierRepositories;
-    private  final ProductRepositories productRepositories;
-    private  final UserRepositories userRepositories;
-    private  final OrderDetailsRepositories orderDetailsRepositories;
+    private  final SupplierRepository supplierRepository;
+    private  final ProductRepository productRepository;
+    private  final UserRepository userRepository;
+    private  final OrderDetailsRepository orderDetailsRepository;
 
 
 
@@ -36,18 +36,18 @@ public class SupplierService {
 
     public Optional<List<Product>> getProducts(long supplierId) {
 
-        Optional<Supplier> supplier = supplierRepositories.findById(supplierId);
+        Optional<Supplier> supplier = supplierRepository.findById(supplierId);
         return supplier.map(Supplier::getProducts);
 
     }
     public Optional<OrderDetails> getOrder(long orderId) {
-        return orderDetailsRepositories.findById(orderId);
+        return orderDetailsRepository.findById(orderId);
 
     }
 
     public Optional<List<IOrderProjection>> getOrderDetails(long supplierId) {
 
-        return supplierRepositories.findOrderDetailsBySupplierId(supplierId);
+        return supplierRepository.findOrderDetailsBySupplierId(supplierId);
 
     }
 
@@ -59,22 +59,22 @@ public class SupplierService {
 //    }>
 
     public void updateOrderStatus(long orderDetailId , OrderStatus orderStatus) {
-              OrderDetails orderDetails = orderDetailsRepositories.findById(orderDetailId).get();
+              OrderDetails orderDetails = orderDetailsRepository.findById(orderDetailId).get();
               orderDetails.setOrderStatus(orderStatus);
               orderDetails.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
-              orderDetailsRepositories.save(orderDetails);
+              orderDetailsRepository.save(orderDetails);
 
 
 
     }
 
     public  Optional<Double> getProfits(long supplierId) {
-      return    supplierRepositories.findTotalPriceBySupplierIdForLastWeek(supplierId);
+      return    supplierRepository.findTotalPriceBySupplierIdForLastWeek(supplierId);
 
     }
 
     public  Optional<List<OrderDetails>> shippedProducts(long supplierId) {
-        return supplierRepositories.findShippedProductsBySupplierId(supplierId);
+        return supplierRepository.findShippedProductsBySupplierId(supplierId);
     }
 
 

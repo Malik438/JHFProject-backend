@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.ecommerce.enums.Role;
 import org.example.ecommerce.model.orderModel.OrderDetails;
 import org.example.ecommerce.model.orderModel.ShoppingSession;
 import org.example.ecommerce.model.productModel.FavouriteProduct;
@@ -40,7 +41,7 @@ public class User implements UserDetails {
 
 
     @Enumerated(EnumType.STRING)
-    private  Role role ;
+    private Role role ;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)

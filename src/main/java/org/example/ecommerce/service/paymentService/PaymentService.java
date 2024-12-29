@@ -2,8 +2,8 @@ package org.example.ecommerce.service.paymentService;
 
 import org.example.ecommerce.model.usersModel.User;
 import org.example.ecommerce.model.usersModel.UserPayment;
-import org.example.ecommerce.reopsotries.userRepo.UserPaymentRepositories;
-import org.example.ecommerce.reopsotries.userRepo.UserRepositories;
+import org.example.ecommerce.reopsotries.userRepo.UserPaymentRepository;
+import org.example.ecommerce.reopsotries.userRepo.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -14,12 +14,12 @@ import java.util.Optional;
 @Service
 public class PaymentService {
 
-    private  final UserPaymentRepositories userPaymentRepositories;
-    private final UserRepositories userRepositories;
+    private  final UserPaymentRepository userPaymentRepository;
+    private final UserRepository userRepository;
 
-    public PaymentService(UserPaymentRepositories userPaymentRepositories, UserRepositories userRepositories) {
-        this.userPaymentRepositories = userPaymentRepositories;
-        this.userRepositories = userRepositories;
+    public PaymentService(UserPaymentRepository userPaymentRepository, UserRepository userRepository) {
+        this.userPaymentRepository = userPaymentRepository;
+        this.userRepository = userRepository;
     }
 
 
@@ -27,7 +27,7 @@ public class PaymentService {
     public UserPayment addUserPayment(Long userId) {
         // todo you should make this method take object
 
-        Optional<User> user = userRepositories.findById(userId);
+        Optional<User> user = userRepository.findById(userId);
         UserPayment userPayment = new UserPayment();
 
         if(user.isPresent()) {
@@ -42,7 +42,7 @@ public class PaymentService {
 
 
 
-        return userPaymentRepositories.save(userPayment);
+        return userPaymentRepository.save(userPayment);
 
     }
 }

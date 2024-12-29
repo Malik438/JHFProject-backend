@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.ecommerce.model.orderModel.enums.OrderStatus;
+import org.example.ecommerce.enums.OrderStatus;
 import org.example.ecommerce.model.usersModel.User;
 
 import java.sql.Timestamp;

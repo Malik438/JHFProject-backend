@@ -1,7 +1,7 @@
 package org.example.ecommerce.service.userService;
 
 import org.example.ecommerce.model.usersModel.User;
-import org.example.ecommerce.reopsotries.userRepo.UserRepositories;
+import org.example.ecommerce.reopsotries.userRepo.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,17 +11,17 @@ public class UserService {
 
 
 
-    private  final UserRepositories userRepositories;
-    public UserService(UserRepositories userRepositories) {
+    private  final UserRepository userRepository;
+    public UserService(UserRepository userRepository) {
 
-        this.userRepositories = userRepositories;
+        this.userRepository = userRepository;
     }
 
 
 
 
     public User getUserById(Long id){
-        return  userRepositories.findById(id).orElse(null);
+        return  userRepository.findById(id).orElse(null);
 
     }
 

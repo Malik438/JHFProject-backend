@@ -7,26 +7,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
-import org.example.ecommerce.model.Dto.AuthenticationRequest;
-import org.example.ecommerce.model.Dto.AuthenticationResponse;
-import org.example.ecommerce.model.Dto.SupplierRegisterRequest;
-import org.example.ecommerce.model.Dto.UserRegisterRequest;
+import org.example.ecommerce.Dto.AuthenticationRequest;
+import org.example.ecommerce.Dto.AuthenticationResponse;
+import org.example.ecommerce.Dto.SupplierRegisterRequest;
+import org.example.ecommerce.Dto.UserRegisterRequest;
 
 import org.example.ecommerce.model.productModel.Supplier;
 import org.example.ecommerce.model.token.Token;
 import org.example.ecommerce.model.token.TokenRepository;
 import org.example.ecommerce.model.token.TokenType;
-import org.example.ecommerce.model.usersModel.Role;
+import org.example.ecommerce.enums.Role;
 import org.example.ecommerce.model.usersModel.User;
-import org.example.ecommerce.reopsotries.productRepo.SupplierRepositories;
-import org.example.ecommerce.reopsotries.userRepo.UserAddressRepositories;
-import org.example.ecommerce.reopsotries.userRepo.UserRepositories;
+import org.example.ecommerce.reopsotries.productRepo.SupplierRepository;
+import org.example.ecommerce.reopsotries.userRepo.UserAddressRepository;
+import org.example.ecommerce.reopsotries.userRepo.UserRepository;
 import org.example.ecommerce.service.JwtService.JwtService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,13 +39,13 @@ import java.util.List;
 public class AuthenticationService {
 
 
-    private  final UserRepositories userRepositories ;
+    private  final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder ;
     private final JwtService  jwtService ;
     private  final AuthenticationManager authenticationManager ;
-    private  final UserAddressRepositories userAddressRepositories ;
+    private  final UserAddressRepository userAddressRepository;
     private  final TokenRepository tokenRepository ;
-    private  final SupplierRepositories supplierRepositories ;
+    private  final SupplierRepository supplierRepository;
 
     public User userRegister(UserRegisterRequest userRegisterRequest) {
         User user = new User();
@@ -62,7 +61,7 @@ public class AuthenticationService {
         user.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
 
-        userRepositories.save(user);
+        userRepository.save(user);
 
         //userAddressRepositories.saveAll(registerRequest.getAddresses());
 
@@ -80,7 +79,7 @@ public class AuthenticationService {
         supplier.setPassword(passwordEncoder.encode(supplierRegisterRequest.getSupplierPassword()));
         supplier.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         supplier.setRole(Role.SUPPLIER);
-       return   supplierRepositories.save(supplier);
+       return   supplierRepository.save(supplier);
 
 
     }
@@ -89,7 +88,7 @@ public class AuthenticationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
-        Supplier supplier = supplierRepositories.findByUsername(authenticationRequest.getUsername()).orElse(null);
+        Supplier supplier = supplierRepository.findByUsername(authenticationRequest.getUsername()).orElse(null);
 
             var token = jwtService.generateToken(supplier);
             var refreshToken = jwtService.generateRefreshToken(supplier);
@@ -109,7 +108,7 @@ public class AuthenticationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
-        User user = userRepositories.findByUsername(authenticationRequest.getUsername()).orElse(null);
+        User user = userRepository.findByUsername(authenticationRequest.getUsername()).orElse(null);
 
 
         // If found in User repository, generate token for User
@@ -173,7 +172,7 @@ public class AuthenticationService {
         refreshToken = authHeader.substring(7);
         userName = jwtService.extractUserName(refreshToken);
         if (userName != null) {
-            var user = this.userRepositories.findByUsername(userName)
+            var user = this.userRepository.findByUsername(userName)
                     .orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);

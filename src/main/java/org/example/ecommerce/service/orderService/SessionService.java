@@ -2,14 +2,13 @@ package org.example.ecommerce.service.orderService;
 
 import org.example.ecommerce.model.orderModel.CartItem;
 import org.example.ecommerce.model.orderModel.ShoppingSession;
-import org.example.ecommerce.model.orderModel.enums.SessionStatus;
+import org.example.ecommerce.enums.SessionStatus;
 import org.example.ecommerce.model.usersModel.User;
-import org.example.ecommerce.reopsotries.orderRepo.CartItemRepositories;
-import org.example.ecommerce.reopsotries.orderRepo.ShoppingSessionRepositories;
+import org.example.ecommerce.reopsotries.orderRepo.CartItemRepository;
+import org.example.ecommerce.reopsotries.orderRepo.ShoppingSessionRepository;
 import org.example.ecommerce.service.userService.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -21,14 +20,14 @@ import java.util.Optional;
 public class SessionService {
 
 
-   private final ShoppingSessionRepositories shoppingSessionRepositories;
+   private final ShoppingSessionRepository shoppingSessionRepository;
 
-   private final CartItemRepositories cartItemRepositories;
+   private final CartItemRepository cartItemRepositories;
    private final UserService userService;
 
    @Autowired
-   public SessionService(ShoppingSessionRepositories shoppingSessionRepositories, CartItemRepositories cartItemRepositories, UserService userService) {
-       this.shoppingSessionRepositories = shoppingSessionRepositories;
+   public SessionService(ShoppingSessionRepository shoppingSessionRepository, CartItemRepository cartItemRepositories, UserService userService) {
+       this.shoppingSessionRepository = shoppingSessionRepository;
 
        this.cartItemRepositories = cartItemRepositories;
        this.userService = userService;
@@ -52,18 +51,18 @@ public class SessionService {
    }
 
    public  Optional<ShoppingSession> getActiveShoppingSessionByUserId(Long userid) {
-       return  shoppingSessionRepositories.findActiveShoppingSessionByUserId(userid,SessionStatus.ACTIVE);
+       return  shoppingSessionRepository.findActiveShoppingSessionByUserId(userid,SessionStatus.ACTIVE);
    }
 
    public ShoppingSession saveShoppingSession(ShoppingSession shoppingSession) {
-        return  shoppingSessionRepositories.save(shoppingSession);
+        return  shoppingSessionRepository.save(shoppingSession);
    }
 
 
    public Optional <ShoppingSession> getShoppingSessionByUserId(Long userId) {
 
 
-       return shoppingSessionRepositories.findShoppingSessionByUserId(userId);
+       return shoppingSessionRepository.findShoppingSessionByUserId(userId);
    }
 
 
@@ -71,11 +70,11 @@ public class SessionService {
   public  ShoppingSession updateShoppingSessionStatus(Long shoppingSessionId , SessionStatus sessionStatus) {
 
 
-      ShoppingSession session = shoppingSessionRepositories.findById(shoppingSessionId).orElseThrow(() -> new RuntimeException("Shopping session not found"));
+      ShoppingSession session = shoppingSessionRepository.findById(shoppingSessionId).orElseThrow(() -> new RuntimeException("Shopping session not found"));
 
       session.setSessionStatus(sessionStatus);
 
-      shoppingSessionRepositories.save(session);
+      shoppingSessionRepository.save(session);
 
        if(sessionStatus != SessionStatus.ACTIVE) {
            createShoppingSession(session.getUser().getUserId());
@@ -98,7 +97,7 @@ public class SessionService {
 
        List<List<CartItem>> cartItems = new ArrayList<>();
 
-      List <ShoppingSession> sessions = shoppingSessionRepositories.findSavedShoppingSessionByUserId(userId ,SessionStatus.SAVED).get();
+      List <ShoppingSession> sessions = shoppingSessionRepository.findSavedShoppingSessionByUserId(userId ,SessionStatus.SAVED).get();
 
 
       for(ShoppingSession session: sessions) {

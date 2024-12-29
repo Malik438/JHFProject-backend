@@ -1,15 +1,12 @@
 package org.example.ecommerce.config;
 
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
-import org.example.ecommerce.model.productModel.Supplier;
 import org.example.ecommerce.model.usersModel.User;
-import org.example.ecommerce.reopsotries.productRepo.SupplierRepositories;
-import org.example.ecommerce.reopsotries.userRepo.UserRepositories;
+import org.example.ecommerce.reopsotries.productRepo.SupplierRepository;
+import org.example.ecommerce.reopsotries.userRepo.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -23,8 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final UserRepositories repository;
-    private final SupplierRepositories supplierRepository;
+    private final UserRepository repository;
+    private final SupplierRepository supplierRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
