@@ -99,7 +99,7 @@ public class CheckoutService {
             if(paymentDetails.getAmount() < userPayment.getAmount()) {
                 paymentDetails.setStatus(true);
                 userPayment.setAmount(userPayment.getAmount() - paymentDetails.getAmount());
-                //delete(sessionId);
+
 
 
 
@@ -120,11 +120,7 @@ public class CheckoutService {
         }
 
 
-      @Transactional
-      public  void delete(long sessionId){
-          shoppingSessionRepository.deleteById(sessionId);
 
-      }
 
 
 
