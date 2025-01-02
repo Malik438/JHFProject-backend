@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.ecommerce.enums.ProductCatalog;
 import org.example.ecommerce.model.orderModel.CartItem;
 import org.example.ecommerce.model.orderModel.OrderItem;
 
@@ -63,6 +64,9 @@ public class Product {
     @JsonIgnore
     private List<OrderItem> orderItem;
 
+    @Enumerated(EnumType.STRING)
+    private ProductCatalog productCatalog;
+
     @JsonProperty("supplierId") // Includes this field in the JSON response
     public Long getSupplierId() {
         return supplier != null ? supplier.getSupplierId() : null;
@@ -72,6 +76,8 @@ public class Product {
 
     @Lob
     private  String imageUrl;
+
+
 
      private  Timestamp createdAt ;
      private  Timestamp updatedAt ;

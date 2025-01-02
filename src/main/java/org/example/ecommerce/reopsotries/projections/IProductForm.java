@@ -9,6 +9,7 @@ public interface IProductForm  {
       String getPrice();
       String getDescription();
       String getImageUrl();
+      String getSupplierId();
 
 
 

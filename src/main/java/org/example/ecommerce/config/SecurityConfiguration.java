@@ -34,12 +34,11 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers("/api/v1/auth/**")// here request are not authenticated
-                                .permitAll()
-                                .requestMatchers("photo/add").permitAll()
+                        req
+                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/api/v1/auth/**").permitAll()
                                 .requestMatchers("api/v1/supplier/**").hasAuthority(Role.SUPPLIER.name())
-                                .requestMatchers("/api/v1/**")
-                                .authenticated()
+                                .requestMatchers("/api/v1/**").authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))// session once per request that mean each request need to be authenticated  in another word STATELESS
                 .authenticationProvider(authenticationProvider)

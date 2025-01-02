@@ -2,6 +2,7 @@ package org.example.ecommerce.service.productService;
 
 import org.example.ecommerce.Dto.FavProductDto;
 import org.example.ecommerce.Dto.ProductDto;
+import org.example.ecommerce.enums.ProductCatalog;
 import org.example.ecommerce.model.productModel.*;
 import org.example.ecommerce.model.productModel.FavouriteProduct;
 import org.example.ecommerce.model.usersModel.User;
@@ -68,6 +69,27 @@ public class ProductService {
 
     }
 
+    public  Page<IProductForm> getNewestProducts(int page,int size){
+        Pageable pageable = PageRequest.of(page,size);
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(7);
+        return  productRepository.findNewAddedProductsWithPagination(threeDaysAgo,pageable);
+    }
+
+    public Page<IProductForm> getBestSellerProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        return  productRepository.findBestSellerProducts(pageable);
+    }
+
+    public  Page<IProductForm> findByCatalog(ProductCatalog productCatalog,int page, int size){
+        Pageable pageable = PageRequest.of(page,size);
+        return  productRepository.findByCatalog(productCatalog,pageable);
+    }
+
+
+
+
+
+
 
 
     public void  createProduct(ProductDto productDto , MultipartFile file, Long  supplierId  ) throws IOException {
@@ -76,7 +98,8 @@ public class ProductService {
 
         Product product =  productDto.getProduct() ;
         product.setImageUrl(Base64.getEncoder().encodeToString(file.getBytes()));
-
+        product.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        product.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         ProductCategory productCategory = productDto.getProductCategory() ;
         List<ProductAttributes> productAttributes = productDto.getAttributes();
         Optional<Supplier> supplier = supplierRepository.findById(supplierId);
@@ -214,6 +237,8 @@ public class ProductService {
             return  rowAffected > 0  ?  Optional.of(true) : Optional.of(false)   ;
 
         }
+
+
 
 
 //        @Transactional

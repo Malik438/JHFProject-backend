@@ -2,6 +2,9 @@ package org.example.ecommerce.controller.productController;
 
 
 import org.example.ecommerce.Dto.FavProductDto;
+import org.example.ecommerce.Dto.ProductDto;
+import org.example.ecommerce.enums.ProductCatalog;
+import org.example.ecommerce.model.orderModel.ShoppingSession;
 import org.example.ecommerce.model.productModel.Product;
 import org.example.ecommerce.model.productModel.ProductCategory;
 import org.example.ecommerce.reopsotries.projections.IProductForm;
@@ -28,6 +31,24 @@ public class ProductController {
 
 
     // add new Product ;
+
+
+    @GetMapping("get/products/by/catalog")
+    public ResponseEntity<Page<IProductForm>> getProductsByCatalog(@RequestParam(name = "catalog") ProductCatalog catalog, @RequestParam(name = "page" ,defaultValue = "0") int page , @RequestParam(name ="size" ,defaultValue = "10" ) int size) {
+        return ResponseEntity.ok(productService.findByCatalog(catalog,page,size));
+
+    }
+
+
+   @GetMapping("/get/best/seller/products")
+   public  ResponseEntity<Page<IProductForm>> getBestSellerProducts(@RequestParam(name = "page" ,defaultValue = "0") int page , @RequestParam(name ="size" ,defaultValue = "10" ) int size) {
+        return  ResponseEntity.ok(productService.getBestSellerProducts(page, size));
+   }
+
+    @GetMapping("/get/newest/products")
+    public ResponseEntity<Page<IProductForm>> getNewestProducts(@RequestParam(name = "page" ,defaultValue = "0") int page , @RequestParam(name ="size" ,defaultValue = "10" ) int size) {
+         return  ResponseEntity.ok(productService.getNewestProducts(page, size));
+    }
 
 
     @GetMapping("/get/{product_id}")
