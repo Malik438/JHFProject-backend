@@ -29,6 +29,9 @@ public class Product {
     private  String description;
     private  int price;
     private int quantity;
+    @Lob
+    @JsonIgnore
+    private  String mainImage;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id")
@@ -64,6 +67,11 @@ public class Product {
     @JsonIgnore
     private List<OrderItem> orderItem;
 
+    @OneToMany(cascade = CascadeType.ALL , mappedBy = "product")
+    private List<Image> images;
+
+
+
     @Enumerated(EnumType.STRING)
     private ProductCatalog productCatalog;
 
@@ -74,8 +82,8 @@ public class Product {
 
 
 
-    @Lob
-    private  String imageUrl;
+//    @Lob
+//    private  String imageUrl;
 
 
 

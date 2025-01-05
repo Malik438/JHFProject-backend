@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Entity(name = "token")
 public class Token {
 
     @Id

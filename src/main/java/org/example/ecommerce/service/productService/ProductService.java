@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -37,9 +38,10 @@ public class ProductService {
     private  final SavedProductRepository savedProductRepository;
     private  final SessionService sessionService;
     private  final SupplierRepository supplierRepository;
+    private  final  ImageService imageService;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ProductAttributesRepository productAttributesRepository, UserRepository userRepository, FavouriteProductRepository favouriteProductRepository, CartItemRepository cartItemRepositories, SavedProductRepository savedProductRepository, SessionService sessionService, SupplierRepository supplierRepository) {
+    public ProductService(ProductRepository productRepository, ProductCategoryRepository productCategoryRepository, ProductAttributesRepository productAttributesRepository, UserRepository userRepository, FavouriteProductRepository favouriteProductRepository, CartItemRepository cartItemRepositories, SavedProductRepository savedProductRepository, SessionService sessionService, SupplierRepository supplierRepository, ImageService imageService) {
         this.productRepository = productRepository;
         this.productCategoryRepository = productCategoryRepository;
         this.productAttributesRepository = productAttributesRepository;
@@ -49,6 +51,7 @@ public class ProductService {
         this.savedProductRepository = savedProductRepository;
         this.sessionService = sessionService;
         this.supplierRepository = supplierRepository;
+        this.imageService = imageService;
     }
 
 
@@ -92,17 +95,20 @@ public class ProductService {
 
 
 
-    public void  createProduct(ProductDto productDto , MultipartFile file, Long  supplierId  ) throws IOException {
+    public void  createProduct(ProductDto productDto , List<MultipartFile> file, Long  supplierId  ) throws IOException {
+
 
 
 
         Product product =  productDto.getProduct() ;
-        product.setImageUrl(Base64.getEncoder().encodeToString(file.getBytes()));
         product.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         product.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         ProductCategory productCategory = productDto.getProductCategory() ;
         List<ProductAttributes> productAttributes = productDto.getAttributes();
         Optional<Supplier> supplier = supplierRepository.findById(supplierId);
+        List<Image> images = new ArrayList<>();
+
+
 
 
 
@@ -119,6 +125,18 @@ public class ProductService {
         productCategoryRepository.save(productCategory);
 
         product =   productRepository.save(product);
+        product.setMainImage(Base64.getEncoder().encodeToString(file.get(0).getBytes()));
+
+        for(MultipartFile multipartFile : file){
+            Image image = new Image();
+            image.setImage(Base64.getEncoder().encodeToString(multipartFile.getBytes()));
+            image.setProduct(product);
+            imageService.save(image);
+            images.add(image);
+        }
+
+        product.setImages(images);
+
 
 
         for (ProductAttributes Attributes : productAttributes) {

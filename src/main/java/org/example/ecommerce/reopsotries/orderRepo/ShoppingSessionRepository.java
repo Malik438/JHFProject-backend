@@ -15,21 +15,21 @@ public interface ShoppingSessionRepository extends CrudRepository<ShoppingSessio
 
 
 
-    @Query("select s from Shopping_Session s where s.user.userId = :userId and s.sessionStatus = :status")
+    @Query("select s from shopping_session s where s.user.userId = :userId and s.sessionStatus = :status")
     Optional<ShoppingSession> findActiveShoppingSessionByUserId(@Param("userId") Long userId, @Param("status") SessionStatus status);
 
-    @Query("select s from  Shopping_Session s where  s.user.userId = :userId ")
+    @Query("select s from  shopping_session s where  s.user.userId = :userId ")
     public Optional<ShoppingSession> findShoppingSessionByUserId(Long userId);
 
 
-    @Query("select s from Shopping_Session s where s.user.userId = :userId and s.sessionStatus = :status")
+    @Query("select s from shopping_session s where s.user.userId = :userId and s.sessionStatus = :status")
     Optional<List<ShoppingSession>> findSavedShoppingSessionByUserId(@Param("userId") Long userId, @Param("status") SessionStatus status);
 
 
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM Shopping_Session s WHERE s.user.userId = :userId")
+    @Query("DELETE FROM shopping_session s WHERE s.user.userId = :userId")
     void deleteShoppingSessionByUser_UserId(@Param("userId") Long userId);
 
 

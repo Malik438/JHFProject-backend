@@ -13,12 +13,12 @@ import java.sql.Timestamp;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "user_address")
 public class UserAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userAddressId;
+    private Long id;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

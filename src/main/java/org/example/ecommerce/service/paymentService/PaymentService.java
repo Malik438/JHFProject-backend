@@ -31,7 +31,7 @@ public class PaymentService {
         UserPayment userPayment = new UserPayment();
 
         if(user.isPresent()) {
-            userPayment.setUser(user.get());
+            userPayment.setUserP(user.get());
             userPayment.setPaymentType("VisaCard");
             userPayment.setAmount(40000.2);
             userPayment.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));

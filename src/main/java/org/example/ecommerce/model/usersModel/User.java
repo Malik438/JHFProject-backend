@@ -50,7 +50,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAddress> address;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL )
+    @OneToMany(mappedBy = "userP", cascade = CascadeType.ALL )
     private List<UserPayment> payments;
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)

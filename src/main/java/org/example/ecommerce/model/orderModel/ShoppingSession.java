@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Shopping_Session")
+@Entity(name = "shopping_session")
 public class ShoppingSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

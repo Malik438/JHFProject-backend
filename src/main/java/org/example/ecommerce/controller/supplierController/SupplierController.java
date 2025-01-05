@@ -35,11 +35,12 @@ public class SupplierController {
 
 
     @PostMapping("product/create/{supplierId}")
-    public ResponseEntity<String> addProduct(@RequestPart(name = "productDto") String productDtoJson , @RequestPart(name = "multipartFile") MultipartFile multipartFile , @PathVariable(name = "supplierId") long id ) {
+    public ResponseEntity<String> addProduct(@RequestPart(name = "productDto") String productDtoJson , @RequestPart(name = "multipartFile") List<MultipartFile> multipartFile , @PathVariable(name = "supplierId") long id ) {
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             ProductDto productDto = objectMapper.readValue(productDtoJson, ProductDto.class);
+
             productService.createProduct(productDto ,multipartFile , id);
             return ResponseEntity.ok("Product added successfully");
 

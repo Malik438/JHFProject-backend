@@ -16,15 +16,16 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "user_payment")
 public class UserPayment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
+    @ManyToOne(fetch =  FetchType.EAGER)
     @JoinColumn(name =  "user_id")
     @JsonIgnore
-    private User user;
+    private User userP;
 
     private String paymentType ;
 

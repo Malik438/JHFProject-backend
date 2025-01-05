@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface TokenRepository extends JpaRepository<Token, Long> {
 
     @Query(value = """
-      select t from Token t inner join User u\s
+      select t from token t inner join User u\s
       on t.user.userId = u.userId\s
       where u.userId = :id and (t.expired = false or t.revoked = false)\s
       """)
@@ -17,7 +17,7 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
 
 
     @Query(value = """
-      select t from Token t inner join Supplier u\s
+      select t from token t inner join Supplier u\s
       on t.supplier.supplierId = u.supplierId\s
       where u.supplierId = :id and (t.expired = false or t.revoked = false)\s
       """)
