@@ -34,7 +34,7 @@ public class OrderDetails {
     @JoinColumn(name = "payment_id" )
     private  PaymentDetails paymentDetails;
 
-    @OneToMany(mappedBy = "orderDetails" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "orderDetails" )
     private List<OrderItem> orderItems;
 
 //    @OneToOne(cascade = CascadeType.ALL ,  mappedBy = "orderDetails_1")
